@@ -1,9 +1,11 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import Modal from "../../component/Modal";
+import Spinner from "../../component/spinner";
 
 const Word = ({ params }) => {
   const [data, setData] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
   const [openModal, setOpenModal] = useState(false);
   const [word, setWord] = useState({
     name: "",
@@ -21,6 +23,7 @@ const Word = ({ params }) => {
         .then((responseData) => {
           setData(responseData);
           console.log(responseData);
+          setIsLoading(false);
         })
         .catch((error) => {
           console.error("Error fetching data:", error);
@@ -36,7 +39,7 @@ const Word = ({ params }) => {
   const handleClick = (value) => {
     setWord(() => ({
       name: value,
-      meaning: data[0].words[value],
+      meaning: data.words[value],
     }));
     handleOpen();
   };
@@ -49,8 +52,9 @@ const Word = ({ params }) => {
           meaning={word?.meaning}
         />
       )}
-      <h1>Words in {alphabet} </h1>
+      <h1>Words in {alphabet?.toUpperCase()} </h1>
       <div>
+        {isLoading && <Spinner />}
         {!!data && (
           <div
             style={{
@@ -61,15 +65,16 @@ const Word = ({ params }) => {
               gap: "25px",
             }}
           >
-            {getKeys(data[0].words).map((item) => (
+            {getKeys(data.words).map((item) => (
               <div
                 key={item}
                 style={{
+                  alignSelf: "flex-start",
                   background: "rgb(215, 224, 230)",
                   borderRadius: "8px",
                   minWidth: "80px",
                   cursor: "pointer",
-                  minHeight: "1rem",
+                  minHeight: "2rem",
                 }}
                 onClick={() => handleClick(item)}
               >

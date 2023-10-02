@@ -1,61 +1,59 @@
-import fs from "fs/promises";
-import path from "path";
-
-const dataFilePath = path.join(process.cwd(), "data", "data.json");
+import connectToDatabase from "./connectMongodb";
 
 export default async (req, res) => {
   if (req.method === "POST") {
+    // Connect to the database first
+    const { db, client } = await connectToDatabase();
+
+    // Extract the alphabet and words from req.body
+    const { alphabet, words } = req.body;
+
     try {
-      // Read existing data from the JSON file, if it exists
-      let jsonData = [];
-      try {
-        const data = await fs.readFile(dataFilePath, "utf-8");
-        jsonData = JSON.parse(data);
-      } catch (error) {
-        // File doesn't exist or is empty, continue with an empty array
-      }
-
-      // Extract the alphabet and words from req.body
-      const { alphabet, words } = req.body;
-
-      // Check if the alphabet already exists in the data
-      const existingAlphabet = jsonData.find(
-        (item) => item.alphabet === alphabet
-      );
+      const existingAlphabet = await db
+        .collection("alphabets")
+        .findOne({ alphabet: alphabet.toUpperCase() });
 
       if (existingAlphabet) {
         // Alphabet exists, check if the word exists in 'words'
         if (!existingAlphabet.words[words.name]) {
           // Word does not exist, add the new word to 'words'
           existingAlphabet.words[words.name] = words.meaning;
+
+          // Update the existing alphabet document in the collection
+          await db
+            .collection("alphabets")
+            .updateOne(
+              { alphabet: alphabet.toUpperCase() },
+              { $set: { words: existingAlphabet.words } }
+            );
+
+          // Respond with success message
+          return res.status(200).json({
+            message: "Word added successfully.",
+          });
         } else {
           // Word already exists, handle as needed (e.g., update or ignore)
           console.log("Word already exists:");
           return res.status(404).json({
             error: "Error",
-            message: "This word already exist on the database",
+            message: "This word already exists in the database",
           });
         }
       } else {
-        // Alphabet doesn't exist, create a new entry for it with a unique ID
+        // Alphabet doesn't exist, create a new alphabet document
         const newAlphabet = {
-          id: jsonData.length + 1,
           alphabet: alphabet,
-          words: {
-            [words.name]: words.meaning, // Use the word name as the key
-          },
+          words: { [words.name]: words.meaning },
         };
-        jsonData.push(newAlphabet);
+
+        // Insert the new alphabet document into the collection
+        await db.collection("alphabets").insertOne(newAlphabet);
+
+        // Respond with success message
+        return res.status(200).json({
+          message: "Alphabet and word added successfully.",
+        });
       }
-
-      // Write the updated data back to the JSON file
-      await fs.writeFile(
-        dataFilePath,
-        JSON.stringify(jsonData, null, 2),
-        "utf-8"
-      );
-
-      res.status(200).json(jsonData); // Respond with the updated data
     } catch (error) {
       console.error("Error saving data:", error);
       res.status(500).json({
@@ -63,6 +61,8 @@ export default async (req, res) => {
         message: error.message,
       });
     }
+    // Close the database connection
+    client.close();
   } else {
     res.status(405).end(); // Method not allowed
   }

@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import Spinner from "../component/spinner";
 
 const Index = () => {
   const [selectedAlphabet, setSelectedAlphabet] = useState("");
@@ -7,6 +8,7 @@ const Index = () => {
     bool: false,
     response: "",
   });
+  const [isLoading, setIsLoading] = useState(false);
   const [newData, setNewData] = useState({
     name: "",
     meaning: "",
@@ -18,6 +20,7 @@ const Index = () => {
   };
 
   const submitHandler = async () => {
+    setIsLoading(true);
     setError((prev) => ({ bool: false, response: "" }));
     const details = {
       alphabet: selectedAlphabet,
@@ -45,8 +48,10 @@ const Index = () => {
         // Handle error if necessary
         setError((prev) => ({ bool: true, response: responseData?.message }));
         console.log("Error saving data.", responseData);
+        setIsLoading(false);
       }
     } catch (error) {
+      setIsLoading(false);
       setError((prev) => ({
         bool: true,
         response: `Error sending POST request, ${responseData?.message}`,
@@ -54,6 +59,7 @@ const Index = () => {
       console.log("Error:", responseData);
     }
     setNewData(() => ({ name: "", meaning: "" }));
+    setIsLoading(false);
   };
 
   return (
@@ -120,6 +126,7 @@ const Index = () => {
             <h3 style={{ color: "red" }}>{error.response}</h3>
           </div>
         )}
+        {isLoading && <Spinner />}
       </div>
     </div>
   );
