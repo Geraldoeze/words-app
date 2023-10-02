@@ -1,0 +1,52 @@
+[
+  {
+    "id": 1,
+    "alphabet": "A",
+    "words": {
+      "apple": "a round fruit with red or green skin and crisp flesh",
+      "airplane": "a powered flying vehicle with fixed wings and a weight greater than that of the air it displaces"
+    }
+  },
+  {
+    "id": 2,
+    "alphabet": "B",
+    "words": {
+      "banana": "a long curved fruit with a soft yellow skin",
+      "butterfly": "a flying insect with large, often colorful wings",
+      "ball": "round"
+    }
+  },
+  {
+    "id": 3,
+    "alphabet": "C",
+    "words": {
+      "cat": "An animal that has a lot of species"
+    }
+  },
+  {
+    "id": 4,
+    "alphabet": "H",
+    "words": {
+      "hen": "chicken for consumption",
+      "hasty": "done or acting with excessive speed; hurried",
+      "harmonious": "forming a pleasing or consistent whole",
+      "heroic": "having the characteristics of a hero or heroine; very brave",
+      "humorous": "funny; making you laugh",
+      "humble": "having or showing a modest or low estimate of ones importance",
+      "hungry": "feeling the need to eat; having a craving for food",
+      "happy": "feeling or showing pleasure or contentment",
+      "helpful": "giving or ready to give help; useful ",
+      "hopeful": "feeling or inspiring optimism about a future event",
+      "handsome": "good-looking; attractive in appearance",
+      "harmonize": "bring into consonance or accord; make compatible",
+      "hallucination": "an experience involving the apparent perception of something not present",
+      "heartwarming": "causing feelings of happiness and pleasure",
+      "high-pitched": "having a high frequency or tone",
+      "horoscope": "a forecast of a person future, typically based on the relative positions of the stars and planets at the time of that person birth",
+      "hospitality": "the friendly and generous reception and entertainment of guests, visitors, or strangers",
+      "humanitarian": "concerned with or seeking to promote human welfare",
+      "hypothesis": "a supposition or proposed explanation made on the basis of limited evidence as a starting point for further investigation",
+      "hydration": "the process of causing something to absorb water"
+    }
+  }
+]
