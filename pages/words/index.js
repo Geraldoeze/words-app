@@ -1,25 +1,26 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import Spinner from "../../component/spinner";
+import clientPromise from "../../lib/mongodb";
 
-const Words = () => {
+const Words = ({data_server}) => {
   const [data, setData] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  useEffect(() => {
-    // Fetch data from the API route
-    fetch("/api/getData")
-      .then((response) => response.json())
-      .then((responseData) => {
-        setData(responseData);
-        console.log(responseData);
-        setIsLoading(false);
-      })
-      .catch((error) => {
-        console.error("Error fetching data:", error);
-      });
-  }, []);
-  console.log(data);
+  // useEffect(() => {
+  //   // Fetch data from the API route
+  //   fetch("/api/getData")
+  //     .then((response) => response.json())
+  //     .then((responseData) => {
+  //       setData(responseData);
+  //       console.log(responseData);
+  //       setIsLoading(false);
+  //     })
+  //     .catch((error) => {
+  //       console.error("Error fetching data:", error);
+  //     });
+  // }, []);
+  console.log(data_server);
   return (
     <div style={{ textAlign: "center" }}>
       <h1>Words in Database</h1>
@@ -34,8 +35,8 @@ const Words = () => {
         }}
       >
         {isLoading && <Spinner />}
-        {!!data &&
-          data
+        {!!data_server &&
+          data_server
             .sort((a, b) => a.alphabet.localeCompare(b.alphabet))
             ?.map((item) => (
               <div
@@ -70,3 +71,14 @@ const Words = () => {
 
 export default Words;
 
+export async function getStaticProps() {
+  const client = await clientPromise
+  const db = client.db("words")
+  const dataFromDb = await db.collection("alphabets").find({}).toArray();
+return {
+  props: {
+    data_server:  JSON.parse(JSON.stringify(dataFromDb))
+
+  }
+}
+}
