@@ -1,7 +1,7 @@
 import clientPromise from "../../lib/mongodb";
 
 export default async (req, res) => {
-  
+  if (req.method === "POST") {
     // Connect to the database first
     const client = await clientPromise;
     const db = client.db("words");
@@ -62,6 +62,8 @@ export default async (req, res) => {
         message: error.message,
       });
     }
-    
-  
+    // Close the database connection
+  } else {
+    res.status(405).end(); // Method not allowed
+  }
 };
