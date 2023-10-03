@@ -38,6 +38,7 @@ const Index = () => {
         },
         body: JSON.stringify(details),
       });
+      console.log(response)
       // Parse the response data if it exists
       const responseData = await response.json();
 
