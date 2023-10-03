@@ -1,6 +1,6 @@
 
 
-import connectToDatabase from "./connectMongodb";
+import connectToDatabase from "../../lib/mongodb";
 
 export default async (req, res) => {
   if (req.method === "GET") {
