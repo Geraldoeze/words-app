@@ -4,8 +4,6 @@ import clientPromise from "../../lib/mongodb";
 export default async function handler(req, res) {
   const client = await clientPromise;
   const db = client.db("words");
-
-  if (req.method === "POST") {
     const { alphabet, words } = req.body;
     try {
       const existingAlphabet = await db
@@ -48,5 +46,5 @@ export default async function handler(req, res) {
       });
     }
     res.status(200).json({ name: "John Doe" });
-  }
+  
 }
