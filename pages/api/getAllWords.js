@@ -1,8 +1,10 @@
-import connectToDatabase from "../../lib/mongodb";
+import clientPromise from "../../lib/mongodb";
 
 export default async (req, res) => {
   // Connect to the database first
-  const { db, client } = await connectToDatabase();
+  const client = await clientPromise;
+  const db = client.db("words");
+
   try {
     const dataFromDb = await db.collection("alphabets").find({}).toArray();
     // Extract words and meanings from all alphabets
@@ -11,14 +13,12 @@ export default async (req, res) => {
       for (const word in alphabetWords) {
         words[word] = alphabetWords[word];
       }
-      console.log(words)
+      
       return words;
     }, {});
 
     res.status(200).json(allWords);
-    client.close();
   } catch (error) {
     res.status(500).json({ message: "Unable to retrieve words" });
-    client.close();
   }
 };

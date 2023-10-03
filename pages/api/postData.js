@@ -1,9 +1,10 @@
-import connectToDatabase from "../../lib/mongodb";
+import clientPromise from "../../lib/mongodb";
 
 export default async (req, res) => {
   if (req.method === "POST") {
     // Connect to the database first
-    const { db, client } = await connectToDatabase();
+    const client = await clientPromise;
+    const db = client.db("words");
 
     // Extract the alphabet and words from req.body
     const { alphabet, words } = req.body;
@@ -62,7 +63,6 @@ export default async (req, res) => {
       });
     }
     // Close the database connection
-    client.close();
   } else {
     res.status(405).end(); // Method not allowed
   }

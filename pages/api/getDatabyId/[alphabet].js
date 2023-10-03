@@ -1,12 +1,12 @@
-import connectToDatabase from "../../lib/mongodb";
+import clientPromise from "../../lib/mongodb";
 
 export default async (req, res) => {
   if (req.method === "GET") {
-    const { db, client } = await connectToDatabase();
+    const client = await clientPromise;
+    const db = client.db("words");
     try {
       // Extract the alphabet parameter from the request
       const { alphabet } = req.query;
-      console.log("GETT", alphabet, req.url);
       const fetched_data = await db
         .collection("alphabets")
         .findOne({ alphabet: alphabet.toUpperCase() });
