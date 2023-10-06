@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import Modal from "../component/Modal";
 ``;
 
-const Random = ({ data, result }) => {
+const Random = ({ data, errors }) => {
   const [randomPair, setRandomPair] = useState(null);
   const [openModal, setOpenModal] = useState(false);
   const [error, setError] = useState({
@@ -12,7 +12,7 @@ const Random = ({ data, result }) => {
 
   useEffect(() => {
     getRandomPair(data);
-    if (!!result) {
+    if (!!errors) {
       setError({ bool: true, response: "An error Occured. Try again" });
     }
   }, []);
@@ -89,20 +89,43 @@ const Random = ({ data, result }) => {
 };
 
 export default Random;
-
 export async function getStaticProps() {
-  let error = null
-  const request = await fetch(`${process.env.BACKEND_SERVER}/random`);
-  const result = await request.json();
-  if (request?.status != 200) {
-    console.log("Error", request.message);
-    error = request
+  try {
+    const request = await fetch(`${process.env.BACKEND_SERVER}/random`);
+    
+    if (!request.ok) {
+      console.error("Error fetching data. Status:", request.status, request.statusText);
+      return {
+        props: {
+          data: null,
+          errors: {
+            status: request.status,
+            message: request.statusText,
+          },
+        },
+      };
+    }
+
+    const result = await request.json();
+    console.log(result);
+
+    return {
+      props: {
+        data: result,
+        errors: null,
+      },
+    };
+  } catch (error) {
+    console.error("Error fetching data:", error);
+
+    return {
+      props: {
+        data: null,
+        errors: {
+          status: 500, // Internal Server Error
+          message: "Internal Server Error",
+        },
+      },
+    };
   }
-  console.log(result);
-  return {
-    props: {
-      data: result,
-      result: error,
-    },
-  };
 }
