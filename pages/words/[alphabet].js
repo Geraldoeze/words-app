@@ -1,41 +1,34 @@
-import { useEffect, useState } from "react";
-import { useRouter } from "next/router";
 import Modal from "../../component/Modal";
+import { useState } from "react";
 import Spinner from "../../component/spinner";
 
-const Word = ({ params }) => {
-  const [data, setData] = useState(null);
-  const [isLoading, setIsLoading] = useState(true);
+const Word = ({ data, alphabet }) => {
   const [openModal, setOpenModal] = useState(false);
   const [word, setWord] = useState({
     name: "",
     meaning: "",
   });
-  const router = useRouter();
-  const { alphabet } = router.query;
 
-  useEffect(() => {
-    // Fetch data from the API route
-    console.log(alphabet);
-    if (!!alphabet) {
-      fetch(`/api/getDatabyId/${alphabet}`)
-        .then((response) => response.json())
-        .then((responseData) => {
-          setData(responseData);
-          console.log(responseData);
-          setIsLoading(false);
-        })
-        .catch((error) => {
-          console.error("Error fetching data:", error);
-        });
-    }
-  }, [alphabet]);
+  // useEffect(() => {
+  //   // Fetch data from the API route
+  //   console.log(alphabet);
+  //   if (!!alphabet) {
+  //     fetch(`${alphabet}`)
+  //       .then((response) => response.json())
+  //       .then((responseData) => {
+  //         setData(responseData);
+  //         console.log(responseData);
+  //         setIsLoading(false);
+  //       })
+  //       .catch((error) => {
+  //         console.error("Error fetching data:", error);
+  //       });
+  //   }
+  // }, [alphabet]);
 
-  function getKeys(value) {
-    return Object.keys(value).sort();
-  }
   const handleOpen = () => setOpenModal(true);
   const closeModal = () => setOpenModal(false);
+
   const handleClick = (value) => {
     setWord(() => ({
       name: value,
@@ -43,6 +36,11 @@ const Word = ({ params }) => {
     }));
     handleOpen();
   };
+
+  function getKeys(value) {
+    return Object.keys(value).sort();
+  }
+
   return (
     <div style={{ textAlign: "center" }}>
       {openModal && (
@@ -54,7 +52,6 @@ const Word = ({ params }) => {
       )}
       <h1>Words in {alphabet?.toUpperCase()} </h1>
       <div>
-        {isLoading && <Spinner />}
         {!!data && (
           <div
             style={{
@@ -98,3 +95,22 @@ const Word = ({ params }) => {
 };
 
 export default Word;
+
+export async function getServerSideProps(context) {
+  const { alphabet } = context.params;
+
+  let error = null;
+  const request = await fetch(`${process.env.BACKEND_SERVER}/get/${alphabet}`);
+  const result = await request.json();
+  if (request?.status != 200) {
+    console.log("Error", request.message);
+    error = request;
+  }
+
+  return {
+    props: {
+      data: result,
+      alphabet: alphabet,
+    },
+  };
+}

@@ -1,26 +1,17 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import Spinner from "../../component/spinner";
-import clientPromise from "../../lib/mongodb";
 
-const Words = ({data_server}) => {
-  const [data, setData] = useState(null);
-  const [isLoading, setIsLoading] = useState(true);
 
-  // useEffect(() => {
-  //   // Fetch data from the API route
-  //   fetch("/api/getData")
-  //     .then((response) => response.json())
-  //     .then((responseData) => {
-  //       setData(responseData);
-  //       console.log(responseData);
-  //       setIsLoading(false);
-  //     })
-  //     .catch((error) => {
-  //       console.error("Error fetching data:", error);
-  //     });
-  // }, []);
-  console.log(data_server);
+const Words = ({data, result}) => {
+  
+  useEffect(() => {
+    if (!!result) {
+      setError({ bool: true, response: "An error Occured. Try again" });
+    }
+  }, []);
+
+  
   return (
     <div style={{ textAlign: "center" }}>
       <h1>Words in Database</h1>
@@ -34,9 +25,9 @@ const Words = ({data_server}) => {
           gap: "25px",
         }}
       >
-        {isLoading && <Spinner />}
-        {!!data_server &&
-          data_server
+        
+        {!!data &&
+          data
             .sort((a, b) => a.alphabet.localeCompare(b.alphabet))
             ?.map((item) => (
               <div
@@ -72,13 +63,18 @@ const Words = ({data_server}) => {
 export default Words;
 
 export async function getStaticProps() {
-  const client = await clientPromise
-  const db = client.db("words")
-  const dataFromDb = await db.collection("alphabets").find({}).toArray();
-return {
-  props: {
-    data_server:  JSON.parse(JSON.stringify(dataFromDb))
-
+  let error = null
+  const request = await fetch(`${process.env.BACKEND_SERVER}/alphabets`);
+  const result = await request.json();
+  if (request?.status != 200) {
+    console.log("Error", request.message);
+    error = request
   }
-}
+  console.log(result);
+  return {
+    props: {
+      data: result,
+      result: error,
+    },
+  };
 }

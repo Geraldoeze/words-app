@@ -1,38 +1,22 @@
 import { useEffect, useState } from "react";
 import Modal from "../component/Modal";
-import Spinner from "../component/spinner";
+``;
 
-const Random = () => {
-  const [data, setData] = useState(null);
+const Random = ({ data, result }) => {
   const [randomPair, setRandomPair] = useState(null);
   const [openModal, setOpenModal] = useState(false);
   const [error, setError] = useState({
     bool: false,
     response: "",
   });
-  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    // Fetch data from the API route
-    fetch("/api/getAllWords")
-      .then((response) => {
-        if (response.status != 200) {
-          setIsLoading(false);
-          setError(() => ({ bool: true, response: response?.message }));
-        }
-        return response.json();
-      })
-      .then((responseData) => {
-        setData(responseData);
-        console.log(responseData);
-        getRandomPair(responseData);
-        setIsLoading(false);
-      })
-      .catch((error) => {
-        setIsLoading(false);
-        console.error("Error fetching data:", error);
-      });
+    getRandomPair(data);
+    if (!!result) {
+      setError({ bool: true, response: "An error Occured. Try again" });
+    }
   }, []);
+
   console.log(data, randomPair);
 
   const getRandomPair = (wordData) => {
@@ -59,7 +43,6 @@ const Random = () => {
           alignItems: "center",
         }}
       >
-        {isLoading && <Spinner />}
         {!!data && (
           <div style={{ textAlign: "center" }}>
             <div
@@ -106,3 +89,20 @@ const Random = () => {
 };
 
 export default Random;
+
+export async function getStaticProps() {
+  let error = null
+  const request = await fetch(`${process.env.BACKEND_SERVER}/random`);
+  const result = await request.json();
+  if (request?.status != 200) {
+    console.log("Error", request.message);
+    error = request
+  }
+  console.log(result);
+  return {
+    props: {
+      data: result,
+      result: error,
+    },
+  };
+}

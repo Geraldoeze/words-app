@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import Spinner from "../component/spinner";
 
-const Index = () => {
+const Index = ({ url }) => {
   const [selectedAlphabet, setSelectedAlphabet] = useState("");
   const [showDropdown, setShowDropdown] = useState(false);
   const [error, setError] = useState({
@@ -29,16 +29,17 @@ const Index = () => {
         meaning: newData?.meaning,
       },
     };
+
     try {
       // Send a POST request to the API route
-      const response = await fetch("/api/postData", {
+      const response = await fetch(`${url}/data`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify(details),
       });
-      console.log(response)
+
       // Parse the response data if it exists
       const responseData = await response.json();
 
@@ -55,9 +56,8 @@ const Index = () => {
       setIsLoading(false);
       setError((prev) => ({
         bool: true,
-        response: `Error sending POST request, ${responseData?.message}`,
+        response: `Error sending POST request`,
       }));
-      console.log("Error:", responseData);
     }
     setNewData(() => ({ name: "", meaning: "" }));
     setIsLoading(false);
@@ -134,3 +134,12 @@ const Index = () => {
 };
 
 export default Index;
+
+export async function getStaticProps() {
+  const url = process.env.BACKEND_SERVER;
+  return {
+    props: {
+      url: url,
+    },
+  };
+}
