@@ -1,17 +1,32 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import Spinner from "../../component/spinner";
+import { apiGetAllAlphabets } from "../../api/fetchData";
 
+const Words = () => {
+  const [data, setData] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState({
+    bool: false,
+    response: "",
+  });
 
-const Words = ({data, error}) => {
-  
   useEffect(() => {
-    if (!!error) {
-      setError({ bool: true, response: "An error Occured. Try again" });
-    }
+    const fetch = async () => {
+      const result = await apiGetAllAlphabets();
+      if (result?.status != 200) {
+        setError({ bool: true, response: "An error Occured. Try again" });
+        setIsLoading(false);
+      } else {
+        setIsLoading(false);
+        setData(result?.data);
+        setError({ bool: false, response: "" });
+      }
+    };
+
+    fetch();
   }, []);
 
-  
   return (
     <div style={{ textAlign: "center" }}>
       <h1>Words in Database</h1>
@@ -25,7 +40,13 @@ const Words = ({data, error}) => {
           gap: "25px",
         }}
       >
-        
+        {isLoading && <Spinner />}
+        {error?.bool && (
+          <div>
+            <h2 style={{ color: "red" }}>An Error Occured.</h2>
+            <h3 style={{ color: "red" }}>{error?.response}</h3>
+          </div>
+        )}
         {!!data &&
           data
             .sort((a, b) => a.alphabet.localeCompare(b.alphabet))
@@ -61,44 +82,3 @@ const Words = ({data, error}) => {
 };
 
 export default Words;
-
-export async function getStaticProps() {
-  try {
-    const request = await fetch(`${process.env.BACKEND_SERVER}/alphabets`);
-    
-    if (!request.ok) {
-      console.error("Error fetching data. Status:", request.status, request.statusText);
-      return {
-        props: {
-          data: null,
-          error: {
-            status: request.status,
-            message: request.statusText,
-          },
-        },
-      };
-    }
-
-    const result = await request.json();
-    console.log(result);
-
-    return {
-      props: {
-        data: result,
-        error: null,
-      },
-    };
-  } catch (error) {
-    console.error("Error fetching data:", error);
-
-    return {
-      props: {
-        data: null,
-        error: {
-          status: 500, // Internal Server Error
-          message: "Internal Server Error",
-        },
-      },
-    };
-  }
-}

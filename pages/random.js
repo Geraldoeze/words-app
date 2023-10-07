@@ -1,23 +1,35 @@
 import { useEffect, useState } from "react";
 import Modal from "../component/Modal";
-``;
+import Spinner from "../component/spinner";
+import { apiGetRandom } from "../api/fetchData";
 
-const Random = ({ data, errors }) => {
+const Random = () => {
   const [randomPair, setRandomPair] = useState(null);
   const [openModal, setOpenModal] = useState(false);
   const [error, setError] = useState({
     bool: false,
     response: "",
   });
+  const [data, setData] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    getRandomPair(data);
-    if (!!errors) {
-      setError({ bool: true, response: "An error Occured. Try again" });
-    }
-  }, []);
+    const fetch = async () => {
+      const result = await apiGetRandom();
+      if (result?.status != 200) {
+        setError({ bool: true, response: "An error Occured. Try again" });
+        setIsLoading(false);
+      } else {
+        setIsLoading(false);
+        setData(result?.data);
+        getRandomPair(result?.data);
+        setError({ bool: false, response: "" });
+        console.log(result);
+      }
+    };
 
-  console.log(data, randomPair);
+    fetch();
+  }, []);
 
   const getRandomPair = (wordData) => {
     const wordKeys = Object.keys(wordData);
@@ -43,6 +55,7 @@ const Random = ({ data, errors }) => {
           alignItems: "center",
         }}
       >
+        {isLoading && <Spinner />}
         {!!data && (
           <div style={{ textAlign: "center" }}>
             <div
@@ -89,43 +102,3 @@ const Random = ({ data, errors }) => {
 };
 
 export default Random;
-export async function getStaticProps() {
-  try {
-    const request = await fetch(`${process.env.BACKEND_SERVER}/random`);
-    
-    if (!request.ok) {
-      console.error("Error fetching data. Status:", request.status, request.statusText);
-      return {
-        props: {
-          data: null,
-          errors: {
-            status: request.status,
-            message: request.statusText,
-          },
-        },
-      };
-    }
-
-    const result = await request.json();
-    console.log(result);
-
-    return {
-      props: {
-        data: result,
-        errors: null,
-      },
-    };
-  } catch (error) {
-    console.error("Error fetching data:", error);
-
-    return {
-      props: {
-        data: null,
-        errors: {
-          status: 500, // Internal Server Error
-          message: "Internal Server Error",
-        },
-      },
-    };
-  }
-}

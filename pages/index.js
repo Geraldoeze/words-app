@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import Spinner from "../component/spinner";
+import { apiPostData } from "../api/fetchData";
 
 const Index = ({ url }) => {
   const [selectedAlphabet, setSelectedAlphabet] = useState("");
@@ -32,24 +33,12 @@ const Index = ({ url }) => {
 
     try {
       // Send a POST request to the API route
-      const response = await fetch(`${url}/data`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(details),
-      });
-
-      // Parse the response data if it exists
-      const responseData = await response.json();
-
-      if (response.ok) {
-        // Data was successfully saved
-        console.log("Data saved successfully.", responseData);
+      let result = await apiPostData(details);
+      if (result.status == "200") {
+        console.log("Data saved successfully.");
       } else {
-        // Handle error if necessary
-        setError((prev) => ({ bool: true, response: responseData?.message }));
-        console.log("Error saving data.", responseData);
+        setError((prev) => ({ bool: true, response: result.message }));
+        console.log("Error saving data.");
         setIsLoading(false);
       }
     } catch (error) {
@@ -134,12 +123,3 @@ const Index = ({ url }) => {
 };
 
 export default Index;
-
-export async function getStaticProps() {
-  const url = process.env.BACKEND_SERVER;
-  return {
-    props: {
-      url: url,
-    },
-  };
-}

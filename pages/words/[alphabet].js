@@ -1,30 +1,40 @@
 import Modal from "../../component/Modal";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useRouter } from "next/router";
+import { apiGetIdData } from "../../api/fetchData";
 import Spinner from "../../component/spinner";
 
-const Word = ({ data, alphabet }) => {
+const Word = () => {
   const [openModal, setOpenModal] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState({ bool: false, response: "" });
+  const [data, setData] = useState();
+  const routes = useRouter();
   const [word, setWord] = useState({
     name: "",
     meaning: "",
   });
+  
+  const alphabet = routes?.query.alphabet;
 
-  // useEffect(() => {
-  //   // Fetch data from the API route
-  //   console.log(alphabet);
-  //   if (!!alphabet) {
-  //     fetch(`${alphabet}`)
-  //       .then((response) => response.json())
-  //       .then((responseData) => {
-  //         setData(responseData);
-  //         console.log(responseData);
-  //         setIsLoading(false);
-  //       })
-  //       .catch((error) => {
-  //         console.error("Error fetching data:", error);
-  //       });
-  //   }
-  // }, [alphabet]);
+  useEffect(() => {
+    const fetch = async () => {
+      if (!!alphabet) {
+        const result = await apiGetIdData(alphabet);
+        if (result?.status != 200) {
+          setError({ bool: true, response: "An error Occured. Try again" });
+          setIsLoading(false);
+        }
+        setIsLoading(false);
+        setData(result?.data);
+      } else {
+        setError({ bool: true, response: "URL Alphabet not gotten." });
+        setIsLoading(false);
+      }
+    };
+
+    fetch();
+  }, []);
 
   const handleOpen = () => setOpenModal(true);
   const closeModal = () => setOpenModal(false);
@@ -52,6 +62,13 @@ const Word = ({ data, alphabet }) => {
       )}
       <h1>Words in {alphabet?.toUpperCase()} </h1>
       <div>
+        {isLoading && <Spinner />}
+        {error?.bool && (
+          <div>
+            <h2 style={{ color: "red" }}>URL Error</h2>
+            <h3 style={{ color: "red" }}> {error?.response}</h3>
+          </div>
+        )}
         {!!data && (
           <div
             style={{
@@ -95,22 +112,3 @@ const Word = ({ data, alphabet }) => {
 };
 
 export default Word;
-
-export async function getServerSideProps(context) {
-  const { alphabet } = context.params;
-
-  let error = null;
-  const request = await fetch(`${process.env.BACKEND_SERVER}/get/${alphabet}`);
-  const result = await request.json();
-  if (request?.status != 200) {
-    console.log("Error", request.message);
-    error = request;
-  }
-
-  return {
-    props: {
-      data: result,
-      alphabet: alphabet,
-    },
-  };
-}
