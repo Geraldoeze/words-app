@@ -2,6 +2,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import Spinner from "../../component/spinner";
 import { apiGetAllAlphabets } from "../../api/fetchData";
+import Header from "../../component/heder";
 
 const Words = () => {
   const [data, setData] = useState([]);
@@ -28,6 +29,8 @@ const Words = () => {
   }, []);
 
   return (
+    <>
+    <Header />
     <div style={{ textAlign: "center" }}>
       <h1>Words in Database</h1>
       <div
@@ -78,6 +81,7 @@ const Words = () => {
             ))}
       </div>
     </div>
+    </>
   );
 };
 

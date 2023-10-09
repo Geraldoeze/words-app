@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import Spinner from "../component/spinner";
 import { apiPostData } from "../api/fetchData";
+import Header from "../component/heder";
 
 const Index = ({ url }) => {
   const [selectedAlphabet, setSelectedAlphabet] = useState("");
@@ -53,6 +54,8 @@ const Index = ({ url }) => {
   };
 
   return (
+    <>
+    <Header />
     <div
       style={{
         textAlign: "center",
@@ -119,6 +122,7 @@ const Index = ({ url }) => {
         {isLoading && <Spinner />}
       </div>
     </div>
+    </>
   );
 };
 

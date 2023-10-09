@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
 import { apiGetIdData } from "../../api/fetchData";
 import Spinner from "../../component/spinner";
+import Header from "../../component/heder";
 
 const Word = () => {
   const [openModal, setOpenModal] = useState(false);
@@ -52,6 +53,8 @@ const Word = () => {
   }
 
   return (
+    <>
+    <Header />
     <div style={{ textAlign: "center" }}>
       {openModal && (
         <Modal
@@ -108,6 +111,7 @@ const Word = () => {
         )}
       </div>
     </div>
+    </>
   );
 };
 
