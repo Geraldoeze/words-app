@@ -14,6 +14,7 @@ const Index = ({ url }) => {
   const [newData, setNewData] = useState({
     name: "",
     meaning: "",
+    description: ""
   });
 
   const handleAlphabetSelect = (alphabet) => {
@@ -29,6 +30,7 @@ const Index = ({ url }) => {
       words: {
         name: newData?.name.toLowerCase(),
         meaning: newData?.meaning,
+        description: newData?.description
       },
     };
 
@@ -70,7 +72,7 @@ const Index = ({ url }) => {
           display: "flex",
           justifyContent: "center",
           alignItems: "center",
-          height: "80vh",
+          height: "60vh",
           flexDirection: "column",
         }}
       >
@@ -90,7 +92,7 @@ const Index = ({ url }) => {
         </select>
 
         {showDropdown && (
-          <div style={{ marginTop: "20px" }}>
+          <div style={{ marginTop: "10px" }}>
             <input
               type="text"
               placeholder="Enter something"
@@ -106,6 +108,14 @@ const Index = ({ url }) => {
               value={newData?.meaning}
               onChange={(e) =>
                 setNewData((prev) => ({ ...prev, meaning: e.target.value }))
+              }
+            />
+             <textarea
+              placeholder="Description"
+              style={{ width: "100%" }}
+              value={newData?.description}
+              onChange={(e) =>
+                setNewData((prev) => ({ ...prev, description: e.target.value }))
               }
             />
             <button type="submit" onClick={submitHandler}>
