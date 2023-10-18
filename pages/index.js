@@ -62,7 +62,7 @@ const Index = ({ url }) => {
       style={{
         textAlign: "center",
         margin: "2rem 2rem 0 2rem",
-        minHeight: "100vh",
+        minHeight: "90vh",
       }}
     >
       <h1>Wordings</h1>

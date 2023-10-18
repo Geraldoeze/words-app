@@ -11,10 +11,10 @@ const Random = () => {
     bool: false,
     response: "",
   });
-  const [data, setData] = useState([]);
+  const [data, setData] = useState({});
   const [isLoading, setIsLoading] = useState(true);
   const [usedData, setUsedData] = useState([]);
-  console.log(usedData);
+  
   useEffect(() => {
     const fetch = async () => {
       const result = await apiGetRandom();
@@ -24,23 +24,21 @@ const Random = () => {
       } else {
         setIsLoading(false);
         setData(result?.data);
-        getRandomPair(result?.data);
         setError({ bool: false, response: "" });
       }
+      getWordPair(result?.data)
+      setIsLoading(false);
     };
-
     fetch();
   }, []);
-
-  const getRandomPair = (wordData) => {
-    if (usedData?.length <= Object.keys(data)) {
+  
+  const getWordPair = (wordData) => {
+    if (usedData?.length <= Object.keys(wordData)?.length) {
       const wordKeys = Object.keys(wordData);
       let randomKey = wordKeys[Math.floor(Math.random() * wordKeys.length)];
-
       while (usedData.includes(randomKey)) {
         randomKey = wordKeys[Math.floor(Math.random() * wordKeys.length)];
       }
-
       setUsedData([...usedData, randomKey]);
       setRandomPair({ key: randomKey, value: wordData[randomKey] });
     }
@@ -69,7 +67,7 @@ const Random = () => {
           }}
         >
           {isLoading && <Spinner />}
-          {!!data && (
+          {!!data && !isLoading && (
             <div style={{ textAlign: "center" }}>
               <div
                 style={{
@@ -99,7 +97,7 @@ const Random = () => {
                 }}
               >
                 <button onClick={handleOpen}>Reveal</button>
-                <button type="disable" onClick={() => getRandomPair(data)}>
+                <button type="disable" onClick={() => {getWordPair(data)}}>
                   Next
                 </button>
               </div>
@@ -118,5 +116,3 @@ const Random = () => {
 };
 
 export default Random;
-
-
