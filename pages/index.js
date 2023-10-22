@@ -14,7 +14,8 @@ const Index = ({ url }) => {
   const [newData, setNewData] = useState({
     name: "",
     meaning: "",
-    description: ""
+    description: "",
+    isRead: false
   });
 
   const handleAlphabetSelect = (alphabet) => {
@@ -27,10 +28,11 @@ const Index = ({ url }) => {
     setError((prev) => ({ bool: false, response: "" }));
     const details = {
       alphabet: selectedAlphabet,
-      words: {
+      word: {
         name: newData?.name.toLowerCase(),
         meaning: newData?.meaning,
-        description: newData?.description
+        description: newData?.description,
+        isRead: false
       },
     };
 
@@ -51,7 +53,7 @@ const Index = ({ url }) => {
         response: `Error sending POST request`,
       }));
     }
-    setNewData(() => ({ name: "", meaning: "" }));
+    setNewData(() => ({ name: "", meaning: "", description: "" }));
     setIsLoading(false);
   };
 
