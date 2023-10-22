@@ -18,15 +18,16 @@ const Random = () => {
   useEffect(() => {
     const fetch = async () => {
       const result = await apiGetRandom();
+      console.log(result);
       if (result?.status != 200) {
         setError({ bool: true, response: "An error Occured. Try again" });
         setIsLoading(false);
       } else {
         setIsLoading(false);
-        setData(result?.data);
+        setData(result?.data?.data);
         setError({ bool: false, response: "" });
+        getWordPair(result?.data?.data);
       }
-      getWordPair(result?.data);
       setIsLoading(false);
     };
     fetch();
@@ -35,11 +36,10 @@ const Random = () => {
   const getWordPair = (mainData) => {
     const wordData = mainData?.map((val) => val?.words);
     const allWords = [].concat(...wordData);
-  
+
     if (usedData?.length < allWords?.length) {
       const randomIndex = Math.floor(Math.random() * allWords.length);
       const randomWord = allWords[randomIndex];
-  
       if (!usedData.includes(randomWord.name)) {
         setUsedData([...usedData, randomWord]);
         setRandomPair({
@@ -47,6 +47,8 @@ const Random = () => {
           value: randomWord?.meaning,
         });
       }
+    } else {
+      alert("Kindly Add more words")
     }
   };
   console.log(usedData);

@@ -20,7 +20,7 @@ const Words = () => {
         setIsLoading(false);
       } else {
         setIsLoading(false);
-        setData(result?.data);
+        setData(result?.data?.data);
         setError({ bool: false, response: "" });
         console.log(data);
       }
