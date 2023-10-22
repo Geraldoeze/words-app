@@ -6,7 +6,7 @@ if (process.env.REACT_APP_ENVIRONMENT == "development") {
 } else if (process.env.REACT_APP_ENVIRONMENT == "production") {
   uri = "https://words-server.vercel.app/server";
 } else {
-  uri = "http://localhost:7000/server";
+  uri = "https://words-server.vercel.app/server";
 }
 console.log(uri);
 const Axios = axios.create({ baseURL: uri });
