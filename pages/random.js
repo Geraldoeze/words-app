@@ -14,7 +14,7 @@ const Random = () => {
   const [data, setData] = useState({});
   const [isLoading, setIsLoading] = useState(true);
   const [usedData, setUsedData] = useState([]);
-  
+
   useEffect(() => {
     const fetch = async () => {
       const result = await apiGetRandom();
@@ -26,24 +26,30 @@ const Random = () => {
         setData(result?.data);
         setError({ bool: false, response: "" });
       }
-      getWordPair(result?.data)
+      getWordPair(result?.data);
       setIsLoading(false);
     };
     fetch();
   }, []);
+
+  const getWordPair = (mainData) => {
+    const wordData = mainData?.map((val) => val?.words);
+    const allWords = [].concat(...wordData);
   
-  const getWordPair = (wordData) => {
-    if (usedData?.length <= Object.keys(wordData)?.length) {
-      const wordKeys = Object.keys(wordData);
-      let randomKey = wordKeys[Math.floor(Math.random() * wordKeys.length)];
-      while (usedData.includes(randomKey)) {
-        randomKey = wordKeys[Math.floor(Math.random() * wordKeys.length)];
+    if (usedData?.length < allWords?.length) {
+      const randomIndex = Math.floor(Math.random() * allWords.length);
+      const randomWord = allWords[randomIndex];
+  
+      if (!usedData.includes(randomWord.name)) {
+        setUsedData([...usedData, randomWord]);
+        setRandomPair({
+          key: randomWord?.name,
+          value: randomWord?.meaning,
+        });
       }
-      setUsedData([...usedData, randomKey]);
-      setRandomPair({ key: randomKey, value: wordData[randomKey] });
     }
   };
-
+  console.log(usedData);
   const handleOpen = () => setOpenModal(true);
   const closeModal = () => setOpenModal(false);
 
@@ -97,7 +103,12 @@ const Random = () => {
                 }}
               >
                 <button onClick={handleOpen}>Reveal</button>
-                <button type="disable" onClick={() => {getWordPair(data)}}>
+                <button
+                  type="disable"
+                  onClick={() => {
+                    getWordPair(data);
+                  }}
+                >
                   Next
                 </button>
               </div>
