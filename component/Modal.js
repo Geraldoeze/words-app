@@ -1,5 +1,6 @@
 // components/Modal.js
 import { useState } from "react";
+import Edit from "../pages/edit";
 
 export default function Modal({ header, meaning, onClose }) {
   const [init, setInit] = useState(true);
@@ -67,47 +68,7 @@ export default function Modal({ header, meaning, onClose }) {
             </div>
           )}
           {!init && (
-            <div
-              style={{
-                marginTop: "10px",
-                background: "skyblue",
-                padding: "1rem 3rem",
-                borderRadius: "16px",
-              }}
-            >
-              <h4>Edit Word</h4>
-              <input
-                type="text"
-                placeholder="Enter something"
-                style={{ marginBottom: "10px" }}
-                value={newData?.name}
-                onChange={(e) =>
-                  setNewData((prev) => ({ ...prev, name: e.target.value }))
-                }
-              />
-              <textarea
-                placeholder="Enter some text"
-                style={{ width: "100%" }}
-                value={newData?.meaning}
-                onChange={(e) =>
-                  setNewData((prev) => ({ ...prev, meaning: e.target.value }))
-                }
-              />
-              <textarea
-                placeholder="Description"
-                style={{ width: "100%" }}
-                value={newData?.description}
-                onChange={(e) =>
-                  setNewData((prev) => ({
-                    ...prev,
-                    description: e.target.value,
-                  }))
-                }
-              />
-              <button type="submit" onClick={submitHandler}>
-                SUBMIT
-              </button>
-            </div>
+           <Edit header={header} meaning={meaning} onClose={onClose} />
           )}
           {remove && (
             <div>
